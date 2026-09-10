@@ -3,78 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seminary Friday Sign-up</title>
+    <title>Seminary Breakfast Sign-up</title>
     <style>
+        :root {
+            --primary-blue: #0A84FF;
+            --bg-color: #F5F5F7;
+            --card-bg: #FFFFFF;
+        }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
-            max-width: 600px;
+            background-color: var(--bg-color);
+            color: #1D1D1F;
+            max-width: 800px;
             margin: 0 auto;
             padding: 20px;
         }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
+
+        /* Smooth Animation for your future graphic */
+        .fade-in-image {
+            width: 100%;
+            max-width: 300px;
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin: 0 auto 20px auto;
+            border-radius: 12px;
+            animation: fadeIn 2s ease-in-out;
         }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-sizing: border-box;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
+
+        .container {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h1 { text-align: center; font-weight: 600; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
+        input {
+            width: 100%; padding: 12px; border: 1px solid #d2d2d7;
+            border-radius: 10px; box-sizing: border-box; font-size: 16px;
+        }
+
         button {
-            width: 100%;
-            padding: 12px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
+            width: 100%; padding: 14px; background-color: var(--primary-blue);
+            color: white; border: none; border-radius: 10px; font-size: 16px;
+            font-weight: 600; cursor: pointer; transition: background-color 0.2s;
+        }
+        button:hover { background-color: #0071E3; }
+
+        /* Apple/Google style Calendar Grid */
+        .calendar-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
             font-weight: bold;
-            cursor: pointer;
+            margin-top: 30px;
+            color: #86868B;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
             margin-top: 10px;
         }
-        button:hover {
-            background-color: #2980b9;
-        }
-        .signup-list {
-            margin-top: 30px;
-        }
-        .signup-item {
+
+        .day {
             background: #f9f9f9;
-            padding: 15px;
-            border-left: 4px solid #3498db;
-            margin-bottom: 10px;
-            border-radius: 4px;
+            border-radius: 8px;
+            min-height: 80px;
+            padding: 5px;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            align-items: flex-end;
+            font-size: 14px;
+        }
+
+        .day.friday {
+            background: #E8F2FF;
+            border: 1px solid var(--primary-blue);
+            cursor: pointer;
+        }
+
+        .day.friday:hover {
+            background: #D1E5FF;
+        }
+
+        .signup-tag {
+            font-size: 10px;
+            background: var(--primary-blue);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: auto;
+            align-self: center;
+            text-align: center;
+            width: 90%;
         }
     </style>
 </head>
 <body>
 
+<!-- To add a graphic of Christ or a Temple, uncomment the image tag below and put your image in your github folder! -->
+<!-- <img src="your-image-file.jpg" alt="Christ Graphic" class="fade-in-image"> -->
+
 <div class="container">
-    <h1>🥞 Friday Seminary Sign-up</h1>
+    <h1>Seminary Breakfast Sign-up</h1>
     
     <div class="form-group">
         <label for="name">Your Name</label>
-        <input type="text" id="name" placeholder="E.g., Nephi" required>
+        <input type="text" id="name" placeholder="E.g., Moroni" required>
     </div>
 
     <div class="form-group">
@@ -84,74 +131,45 @@
 
     <div class="form-group">
         <label for="item">What are you bringing?</label>
-        <input type="text" id="item" placeholder="E.g., Donut holes & Orange Juice" required>
+        <input type="text" id="item" placeholder="E.g., Cinnamon Rolls & Chocolate Milk" required>
     </div>
 
-    <button id="submitBtn">Sign Up!</button>
+    <button id="submitBtn">Sign Up</button>
 
-    <div class="signup-list">
-        <h2>Upcoming Fridays</h2>
-        <div id="list-container">
-            <!-- This is where JavaScript will inject the sign-ups from Firebase -->
-            <div class="signup-item">
-                <div>
-                    <strong>Brother/Sister Example</strong><br>
-                    Muffins and Milk
-                </div>
-                <div style="color: #666;">
-                    Oct 13, 2026
-                </div>
-            </div>
-        </div>
+    <!-- Calendar View -->
+    <div class="calendar-header">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+    </div>
+    <div class="calendar-grid" id="calendarGrid">
+        <!-- JavaScript will populate this -->
     </div>
 </div>
 
-<!-- Firebase Modular SDK -->
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
-
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // YOU WILL GET THIS FROM THE FIREBASE CONSOLE
-  const firebaseConfig = {
-
-    apiKey: "AIzaSyDR4--N5B5jKcrEb6nMzlIiTianU2kFMOU",
-
-    authDomain: "seminarysignups.firebaseapp.com",
-
-    projectId: "seminarysignups",
-
-    storageBucket: "seminarysignups.firebasestorage.app",
-
-    messagingSenderId: "22098394544",
-
-    appId: "1:22098394544:web:310530f12eb50d1e232a75",
-
-    measurementId: "G-H9039RGE0G"
-
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // Example of how the button click will eventually save data
-  document.getElementById('submitBtn').addEventListener('click', async () => {
-      const name = document.getElementById('name').value;
-      const date = document.getElementById('date').value;
-      const item = document.getElementById('item').value;
-
-      if(name && date && item) {
-          alert(`Awesome! You are signed up to bring ${item} on ${date}. (Firebase connection pending!)`);
-          // Here is where we will add the code to push to Firebase
-      } else {
-          alert("Please fill out all fields!");
-      }
-  });
+<script>
+    // Simple script to generate a 30-day calendar layout
+    const calendarGrid = document.getElementById('calendarGrid');
+    
+    // Create 30 days for visual effect
+    for(let i = 1; i <= 30; i++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.classList.add('day');
+        dayDiv.textContent = i;
+        
+        // Let's pretend days 4, 11, 18, 25 are Fridays for this layout
+        if (i === 4 || i === 11 || i === 18 || i === 25) {
+            dayDiv.classList.add('friday');
+            
+            // Add a mock signup tag on one of the days
+            if(i === 11) {
+                const tag = document.createElement('div');
+                tag.classList.add('signup-tag');
+                tag.textContent = "Brother Smith: Muffins";
+                dayDiv.appendChild(tag);
+            }
+        }
+        
+        calendarGrid.appendChild(dayDiv);
+    }
 </script>
 
 </body>
