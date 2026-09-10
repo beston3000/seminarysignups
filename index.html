@@ -18,21 +18,85 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            /* Prevents scrolling while intro plays */
+            overflow-x: hidden; 
         }
 
-        /* Smooth Animation for your future graphic */
-        .fade-in-image {
-            width: 100%;
-            max-width: 300px;
-            display: block;
-            margin: 0 auto 20px auto;
-            border-radius: 12px;
-            animation: fadeIn 2s ease-in-out;
+        /* --- Cinematic Intro System --- */
+        @keyframes sparkShift {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            50% { transform: translateY(-30px) scale(1.2); opacity: 0.8; }
+            100% { transform: translateY(-60px) scale(1); opacity: 0; }
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
+        .fade-in-triple-a {
+            animation: simpleFadeIn 1.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes simpleFadeIn {
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        #intro-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle, #2d3436 0%, #000000 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 1000;
+            color: white;
+            transition: opacity 1.5s ease, visibility 1.5s;
+            font-family: serif;
+            visibility: visible;
+        }
+
+        #intro-screen.hide {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        #intro-content {
+            text-align: center;
+            transform: translateY(15px);
+            z-index: 2;
+        }
+
+        .cinematic-text-main {
+            font-size: 2.5rem;
+            letter-spacing: 0.3rem;
+            text-transform: uppercase;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+
+        .cinematic-text-sub {
+            font-size: 1rem;
+            letter-spacing: 0.15rem;
+            opacity: 0.8;
+        }
+
+        #spark-container {
+            position: absolute; width: 100%; height: 100%; z-index: 1;
+        }
+
+        .spark {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: white; border-radius: 50%;
+            filter: blur(1.5px);
+        }
+
+        /* --- Main App Styling --- */
+        /* Hides container until intro finishes */
+        body > .container {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 2s ease, transform 1s ease-out;
+        }
+
+        body.reveal .container {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .container {
@@ -40,9 +104,17 @@
             padding: 30px;
             border-radius: 18px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-top: 20px;
         }
 
-        h1 { text-align: center; font-weight: 600; }
+        .logo-image {
+            width: 100%;
+            max-width: 250px;
+            display: block;
+            margin: 0 auto 20px auto;
+        }
+
+        h1 { text-align: center; font-weight: 600; margin-bottom: 25px; }
         
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
@@ -55,10 +127,11 @@
             width: 100%; padding: 14px; background-color: var(--primary-blue);
             color: white; border: none; border-radius: 10px; font-size: 16px;
             font-weight: 600; cursor: pointer; transition: background-color 0.2s;
+            margin-top: 10px;
         }
         button:hover { background-color: #0071E3; }
 
-        /* Apple/Google style Calendar Grid */
+        /* --- Calendar Grid --- */
         .calendar-header {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -92,6 +165,7 @@
             background: #E8F2FF;
             border: 1px solid var(--primary-blue);
             cursor: pointer;
+            transition: background 0.2s;
         }
 
         .day.friday:hover {
@@ -113,11 +187,26 @@
 </head>
 <body>
 
-<!-- To add a graphic of Christ or a Temple, uncomment the image tag below and put your image in your github folder! -->
-<!-- <img src="your-image-file.jpg" alt="Christ Graphic" class="fade-in-image"> -->
+<!-- High-End Intro Visualization -->
+<div id="intro-screen">
+    <svg id="transition-path" style="width: 150px; height: 150px; fill: white; opacity: 0.8; margin-bottom: 20px; z-index: 2;" viewBox="0 0 100 100">
+        <path d="M50 0 L100 50 L50 100 L0 50 Z" />
+    </svg>
+    
+    <div id="spark-container"></div>
+    
+    <div id="intro-content" class="fade-in-triple-a">
+        <h1 class="cinematic-text-main">Seminary Fridays</h1>
+        <p class="cinematic-text-sub">Nourishing Body & Spirit</p>
+    </div>
+</div>
 
+<!-- Main Application UI -->
 <div class="container">
-    <h1>Seminary Breakfast Sign-up</h1>
+    <!-- Drop the black and white logo you downloaded into your folder and update this src -->
+    <img src="your-custom-logo.png" alt="Seminary Logo" class="logo-image">
+
+    <h1>Breakfast Sign-up</h1>
     
     <div class="form-group">
         <label for="name">Your Name</label>
@@ -134,32 +223,64 @@
         <input type="text" id="item" placeholder="E.g., Cinnamon Rolls & Chocolate Milk" required>
     </div>
 
-    <button id="submitBtn">Sign Up</button>
+    <button id="submitBtn">Commit</button>
 
     <!-- Calendar View -->
     <div class="calendar-header">
         <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
     </div>
     <div class="calendar-grid" id="calendarGrid">
-        <!-- JavaScript will populate this -->
+        <!-- JavaScript populates this -->
     </div>
 </div>
 
+<!-- Script for UI Logic, Intro, and Calendar -->
 <script>
-    // Simple script to generate a 30-day calendar layout
+    window.addEventListener('load', () => {
+        // 1. Generate spark particles
+        const sparks = 30;
+        const sparkContainer = document.getElementById('spark-container');
+        for (let i = 0; i < sparks; i++) {
+            const spark = document.createElement('div');
+            spark.className = 'spark';
+            spark.style.left = `${Math.random() * 100}%`;
+            spark.style.top = `${Math.random() * 100}%`;
+            spark.style.animation = `sparkShift ${2 + Math.random() * 3}s ease-in-out infinite`;
+            spark.style.animationDelay = `${Math.random() * 2}s`;
+            sparkContainer.appendChild(spark);
+        }
+
+        // 2. SVG Shape Transition (Square to Star-ish compass)
+        setTimeout(() => {
+            const path = document.querySelector('#transition-path path');
+            path.setAttribute('d', 'M50 0 L61 35 L100 35 L69 57 L81 91 L50 70 L19 91 L31 57 L0 35 L39 35 Z');
+            path.style.transition = 'd 1.5s ease-in-out';
+        }, 800);
+
+        // 3. Fade out intro, reveal main app
+        setTimeout(() => {
+            document.getElementById('intro-screen').classList.add('hide');
+            document.body.classList.add('reveal');
+        }, 3800);
+    });
+
+    // Generate Calendar Grid
     const calendarGrid = document.getElementById('calendarGrid');
-    
-    // Create 30 days for visual effect
     for(let i = 1; i <= 30; i++) {
         const dayDiv = document.createElement('div');
         dayDiv.classList.add('day');
         dayDiv.textContent = i;
         
-        // Let's pretend days 4, 11, 18, 25 are Fridays for this layout
+        // Mock Fridays for layout visualization
         if (i === 4 || i === 11 || i === 18 || i === 25) {
             dayDiv.classList.add('friday');
             
-            // Add a mock signup tag on one of the days
+            // Allow clicking a Friday to auto-fill the date input (Mock setup)
+            dayDiv.addEventListener('click', () => {
+                // In a real app, calculate the actual date string (YYYY-MM-DD)
+                alert(`You selected Friday the ${i}th!`);
+            });
+
             if(i === 11) {
                 const tag = document.createElement('div');
                 tag.classList.add('signup-tag');
@@ -167,9 +288,49 @@
                 dayDiv.appendChild(tag);
             }
         }
-        
         calendarGrid.appendChild(dayDiv);
     }
+</script>
+
+<!-- Script for Firebase Connection -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+  // TODO: Replace this with your actual Firebase config keys from the Firebase Console
+  const firebaseConfig = {
+
+  apiKey: "AIzaSyDR4--N5B5jKcrEb6nMzlIiTianU2kFMOU",
+
+  authDomain: "seminarysignups.firebaseapp.com",
+
+  projectId: "seminarysignups",
+
+  storageBucket: "seminarysignups.firebasestorage.app",
+
+  messagingSenderId: "22098394544",
+
+  appId: "1:22098394544:web:310530f12eb50d1e232a75",
+
+  measurementId: "G-H9039RGE0G"
+
+};
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  document.getElementById('submitBtn').addEventListener('click', async () => {
+      const name = document.getElementById('name').value;
+      const date = document.getElementById('date').value;
+      const item = document.getElementById('item').value;
+
+      if(name && date && item) {
+          alert(`Awesome, ${name}! You are signed up to bring ${item} on ${date}. (Firebase hookup pending!)`);
+          // Future code to push 'name', 'date', and 'item' to Firestore goes here
+      } else {
+          alert("Please fill out all fields!");
+      }
+  });
 </script>
 
 </body>
