@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seminary Friday Sign-up</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .signup-list {
+            margin-top: 30px;
+        }
+        .signup-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🥞 Friday Seminary Sign-up</h1>
+    
+    <div class="form-group">
+        <label for="name">Your Name</label>
+        <input type="text" id="name" placeholder="E.g., Nephi" required>
+    </div>
+
+    <div class="form-group">
+        <label for="date">Which Friday?</label>
+        <input type="date" id="date" required>
+    </div>
+
+    <div class="form-group">
+        <label for="item">What are you bringing?</label>
+        <input type="text" id="item" placeholder="E.g., Donut holes & Orange Juice" required>
+    </div>
+
+    <button id="submitBtn">Sign Up!</button>
+
+    <div class="signup-list">
+        <h2>Upcoming Fridays</h2>
+        <div id="list-container">
+            <!-- This is where JavaScript will inject the sign-ups from Firebase -->
+            <div class="signup-item">
+                <div>
+                    <strong>Brother/Sister Example</strong><br>
+                    Muffins and Milk
+                </div>
+                <div style="color: #666;">
+                    Oct 13, 2026
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase Modular SDK -->
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // YOU WILL GET THIS FROM THE FIREBASE CONSOLE
+  const firebaseConfig = {
+
+    apiKey: "AIzaSyDR4--N5B5jKcrEb6nMzlIiTianU2kFMOU",
+
+    authDomain: "seminarysignups.firebaseapp.com",
+
+    projectId: "seminarysignups",
+
+    storageBucket: "seminarysignups.firebasestorage.app",
+
+    messagingSenderId: "22098394544",
+
+    appId: "1:22098394544:web:310530f12eb50d1e232a75",
+
+    measurementId: "G-H9039RGE0G"
+
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Example of how the button click will eventually save data
+  document.getElementById('submitBtn').addEventListener('click', async () => {
+      const name = document.getElementById('name').value;
+      const date = document.getElementById('date').value;
+      const item = document.getElementById('item').value;
+
+      if(name && date && item) {
+          alert(`Awesome! You are signed up to bring ${item} on ${date}. (Firebase connection pending!)`);
+          // Here is where we will add the code to push to Firebase
+      } else {
+          alert("Please fill out all fields!");
+      }
+  });
+</script>
+
+</body>
+</html>
