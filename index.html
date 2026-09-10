@@ -6,38 +6,27 @@
     <title>Seminary Breakfast Sign-up</title>
     <style>
         :root {
-            --black: #000000;
+            --black: #111111;
             --white: #ffffff;
-            --light-gray: #f0f0f0;
-            --dark-gray: #666666;
+            --light-gray: #f5f5f7;
+            --border-color: #e1e1e1;
+            --danger: #ff3b30;
         }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--white);
+            background-color: var(--light-gray);
             color: var(--black);
-            max-width: 800px;
-            margin: 0 auto;
+            margin: 0;
             padding: 20px;
-            overflow-x: hidden; 
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
 
-        /* --- Cinematic Intro System --- */
-        @keyframes sparkShift {
-            0% { transform: translateY(0) scale(1); opacity: 0; }
-            50% { transform: translateY(-30px) scale(1.2); opacity: 0.8; }
-            100% { transform: translateY(-60px) scale(1); opacity: 0; }
-        }
-
-        .fade-in-triple-a {
-            animation: simpleFadeIn 1.8s ease-out forwards;
-            opacity: 0;
-        }
-
-        @keyframes simpleFadeIn {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        /* --- Upgraded Cinematic Curtain Intro --- */
         #intro-screen {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -45,185 +34,210 @@
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 1000;
             color: var(--white);
-            transition: opacity 1.5s ease, visibility 1.5s;
+            transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
             font-family: Georgia, serif;
-            visibility: visible;
         }
 
-        #intro-screen.hide { opacity: 0; visibility: hidden; }
-        #intro-content { text-align: center; transform: translateY(15px); z-index: 2; }
-        
-        .cinematic-text-main {
-            font-size: 2.5rem; letter-spacing: 0.2rem;
+        #intro-screen.slide-up {
+            transform: translateY(-100%);
+        }
+
+        .intro-text {
+            font-size: 2rem; letter-spacing: 0.2rem;
             text-transform: uppercase; margin-bottom: 0.5rem;
-        }
-        
-        .cinematic-text-sub {
-            font-size: 1.2rem; letter-spacing: 0.1rem; opacity: 0.8;
+            animation: fadeInOut 2.5s ease-in-out forwards;
+            opacity: 0;
         }
 
-        #spark-container { position: absolute; width: 100%; height: 100%; z-index: 1; }
-        .spark {
-            position: absolute; width: 4px; height: 4px;
-            background: var(--white); border-radius: 50%; filter: blur(1.5px);
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: scale(0.95); }
+            30% { opacity: 1; transform: scale(1); }
+            80% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.05); }
         }
 
-        /* --- Main App UI --- */
-        body > .container {
-            opacity: 0; transform: translateY(30px);
-            transition: opacity 2s ease, transform 1s ease-out;
+        /* --- Main App Layout (Desktop & Mobile) --- */
+        .app-wrapper {
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+            transition: opacity 1s ease 0.5s, transform 1s cubic-bezier(0.165, 0.84, 0.44, 1) 0.5s;
+            width: 100%;
+            max-width: 1000px;
         }
 
-        body.reveal .container { opacity: 1; transform: translateY(0); }
+        body.reveal .app-wrapper {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
 
-        .container {
+        .card-container {
             background: var(--white);
-            padding: 20px;
-            margin-top: 20px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr; /* Mobile default */
         }
 
-        .logo-image {
-            width: 100%; max-width: 250px;
-            display: block; margin: 0 auto 30px auto;
+        /* Desktop Layout Override */
+        @media (min-width: 768px) {
+            .card-container { grid-template-columns: 1fr 1fr; }
+            body { padding: 40px; }
         }
 
-        h1 { text-align: center; font-size: 2rem; border-bottom: 4px solid var(--black); padding-bottom: 10px; text-transform: uppercase; margin-bottom: 30px; }
-        
-        .form-group { margin-bottom: 25px; }
-        label { display: block; margin-bottom: 10px; font-weight: bold; font-size: 1.2rem; }
-        
-        input {
-            width: 100%; padding: 18px; 
-            border: 3px solid var(--black);
-            border-radius: 8px; box-sizing: border-box; 
-            font-size: 1.2rem; outline: none;
-            transition: border-color 0.2s, background-color 0.2s;
-        }
-        input:focus { background-color: var(--light-gray); }
+        .section { padding: 40px; }
+        .calendar-section { background: var(--white); border-right: 1px solid var(--border-color); }
+        .form-section { background: #fafafa; }
 
-        button {
-            width: 100%; padding: 20px; 
-            background-color: var(--black); color: var(--white); 
-            border: none; border-radius: 8px; 
-            font-size: 1.5rem; font-weight: bold; text-transform: uppercase;
-            cursor: pointer; transition: transform 0.1s, background-color 0.2s;
-            margin-top: 20px;
-        }
-        button:hover { background-color: #333; }
-        button:active { transform: scale(0.98); }
-        button:disabled { background-color: #999; cursor: not-allowed; }
+        h1, h2 { text-transform: uppercase; letter-spacing: -0.5px; margin-top: 0; }
+        h1 { font-size: 1.8rem; border-bottom: 3px solid var(--black); padding-bottom: 10px; margin-bottom: 20px; }
+        h2 { font-size: 1.2rem; color: #555; margin-bottom: 20px; }
 
-        /* --- High Contrast Calendar Grid --- */
+        /* --- Calendar Grid --- */
         .calendar-header {
             display: grid; grid-template-columns: repeat(7, 1fr);
-            text-align: center; font-weight: bold; margin-top: 20px;
-            color: var(--dark-gray); font-size: 1rem; border-bottom: 2px solid var(--black);
-            padding-bottom: 10px;
+            text-align: center; font-weight: 700; color: #888;
+            font-size: 0.85rem; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);
         }
         
         .calendar-grid {
             display: grid; grid-template-columns: repeat(7, 1fr);
-            gap: 10px; margin-top: 15px; margin-bottom: 30px;
+            gap: 8px; margin-top: 15px;
         }
 
         .day {
-            min-height: 80px; padding: 10px;
+            aspect-ratio: 1; /* Makes them perfect squares */
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 1.2rem; font-weight: bold; color: #ccc;
-            border-radius: 8px;
+            font-size: 1.1rem; font-weight: 600; color: #ccc;
+            border-radius: 12px;
         }
 
         .day.friday {
             color: var(--black);
-            border: 3px solid var(--black);
+            border: 2px solid var(--black);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
-        .day.friday:hover { background: var(--light-gray); }
+        .day.friday:hover { background: #eee; transform: translateY(-2px); }
+        .day.friday.selected { background: var(--black); color: var(--white); transform: scale(1.05); }
+
+        .click-hint { font-size: 0.65rem; text-transform: uppercase; margin-top: 2px; }
+
+        /* --- Forms & Buttons --- */
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; color: #444; }
         
-        .day.friday.selected {
-            background: var(--black);
-            color: var(--white);
+        input {
+            width: 100%; padding: 16px; 
+            border: 2px solid var(--border-color);
+            border-radius: 12px; box-sizing: border-box; 
+            font-size: 1rem; outline: none;
+            transition: border-color 0.2s;
+            background: var(--white);
         }
+        input:focus { border-color: var(--black); }
 
-        .click-hint {
-            font-size: 0.8rem; font-weight: normal; margin-top: 5px;
-            text-transform: uppercase;
+        button.primary-btn {
+            width: 100%; padding: 18px; 
+            background-color: var(--black); color: var(--white); 
+            border: none; border-radius: 12px; 
+            font-size: 1.1rem; font-weight: 700; text-transform: uppercase;
+            cursor: pointer; transition: transform 0.1s, background-color 0.2s;
         }
+        button.primary-btn:hover { background-color: #333; }
+        button.primary-btn:active { transform: scale(0.98); }
+
+        /* --- Live Signups List --- */
+        .signup-list-container { margin-top: 40px; }
+        .signup-item {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .signup-details strong { display: block; font-size: 1rem; }
+        .signup-details span { font-size: 0.85rem; color: #666; }
+        
+        .delete-btn {
+            background: none; border: none; color: var(--danger);
+            font-size: 1.2rem; cursor: pointer; padding: 5px 10px;
+            transition: transform 0.2s;
+        }
+        .delete-btn:hover { transform: scale(1.2); }
     </style>
 </head>
 <body>
 
-<!-- Intro Sequence -->
+<!-- Sleek Curtain Intro -->
 <div id="intro-screen">
-    <svg id="transition-path" style="width: 150px; height: 150px; fill: white; margin-bottom: 20px; z-index: 2;" viewBox="0 0 100 100">
-        <path d="M50 0 L100 50 L50 100 L0 50 Z" />
-    </svg>
-    <div id="spark-container"></div>
-    <div id="intro-content" class="fade-in-triple-a">
-        <h1 class="cinematic-text-main">Seminary Fridays</h1>
-        <p class="cinematic-text-sub">Sleek. Simple. Nourishing.</p>
-    </div>
+    <div class="intro-text">Seminary Fridays</div>
 </div>
 
-<!-- Main UI -->
-<div class="container">
-    <img src="your-custom-logo.png" alt="Seminary Logo" class="logo-image">
+<!-- Main App -->
+<div class="app-wrapper">
+    <div class="card-container">
+        
+        <!-- Left Side: Calendar -->
+        <div class="section calendar-section">
+            <h1>Select Date</h1>
+            <div class="calendar-header">
+                <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+            </div>
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- JS Populates Dates -->
+            </div>
+        </div>
 
-    <h1>Breakfast Sign-up</h1>
-    
-    <div class="calendar-header">
-        <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
-    </div>
-    <div class="calendar-grid" id="calendarGrid">
-        <!-- JavaScript populates real dates here -->
-    </div>
-    
-    <div class="form-group">
-        <label for="date">Selected Date</label>
-        <input type="date" id="date" required readonly style="background: #f0f0f0;">
-    </div>
+        <!-- Right Side: Form & List -->
+        <div class="section form-section">
+            <h1>Commit</h1>
+            
+            <div class="form-group">
+                <label for="date">Date (Auto-fills)</label>
+                <input type="date" id="date" required readonly style="background: #e9e9e9; color: #666;">
+            </div>
 
-    <div class="form-group">
-        <label for="name">Your Name</label>
-        <input type="text" id="name" placeholder="E.g., Nephi" required>
-    </div>
+            <div class="form-group">
+                <label for="name">Who are you?</label>
+                <input type="text" id="name" placeholder="E.g., Nephi" required>
+            </div>
 
-    <div class="form-group">
-        <label for="item">What are you bringing?</label>
-        <input type="text" id="item" placeholder="E.g., 2 Dozen Bagels" required>
-    </div>
+            <div class="form-group">
+                <label for="item">What are you bringing?</label>
+                <input type="text" id="item" placeholder="E.g., 2 Dozen Bagels" required>
+            </div>
 
-    <button id="submitBtn">Confirm Sign Up</button>
+            <button id="submitBtn" class="primary-btn">Sign Up</button>
+
+            <!-- Live List -->
+            <div class="signup-list-container">
+                <h2>Claimed Fridays</h2>
+                <div id="liveSignups">
+                    <p style="color: #888; font-size: 0.9rem;">Loading sign-ups...</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <!-- UI Logic Script -->
 <script>
-    // --- Intro Sequence ---
+    // --- Cinematic Intro ---
     window.addEventListener('load', () => {
-        const sparks = 30;
-        const sparkContainer = document.getElementById('spark-container');
-        for (let i = 0; i < sparks; i++) {
-            const spark = document.createElement('div');
-            spark.className = 'spark';
-            spark.style.left = `${Math.random() * 100}%`;
-            spark.style.top = `${Math.random() * 100}%`;
-            spark.style.animation = `sparkShift ${2 + Math.random() * 3}s ease-in-out infinite`;
-            spark.style.animationDelay = `${Math.random() * 2}s`;
-            sparkContainer.appendChild(spark);
-        }
-
         setTimeout(() => {
-            const path = document.querySelector('#transition-path path');
-            path.setAttribute('d', 'M50 0 L61 35 L100 35 L69 57 L81 91 L50 70 L19 91 L31 57 L0 35 L39 35 Z');
-            path.style.transition = 'd 1.5s ease-in-out';
-        }, 800);
-
-        setTimeout(() => {
-            document.getElementById('intro-screen').classList.add('hide');
+            const intro = document.getElementById('intro-screen');
+            intro.classList.add('slide-up');
             document.body.classList.add('reveal');
-        }, 3800);
+            
+            // Remove from DOM after animation completes to free up interactions
+            setTimeout(() => intro.remove(), 1200); 
+        }, 2800);
     });
 
     // --- Smart Calendar Logic ---
@@ -249,12 +263,12 @@
         const currentDate = new Date(year, month, i);
         dayDiv.textContent = i;
         
-        if (currentDate.getDay() === 5) {
+        if (currentDate.getDay() === 5) { // If it's a Friday
             dayDiv.classList.add('friday');
             
             const hint = document.createElement('div');
             hint.classList.add('click-hint');
-            hint.textContent = "Select";
+            hint.textContent = "Open";
             dayDiv.appendChild(hint);
             
             dayDiv.addEventListener('click', function() {
@@ -265,6 +279,10 @@
                 const formattedDay = String(i).padStart(2, '0');
                 dateInput.value = `${year}-${formattedMonth}-${formattedDay}`;
                 
+                // On mobile, scroll down to the form automatically
+                if(window.innerWidth < 768) {
+                    document.getElementById('name').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
                 document.getElementById('name').focus();
             });
         }
@@ -272,12 +290,11 @@
     }
 </script>
 
-<!-- Firebase Connection Script -->
+<!-- Firebase Connection & Real-time Database Logic -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-  // Your actual Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyDR4--N5B5jKcrEb6nMzlIiTianU2kFMOU",
     authDomain: "seminarysignups.firebaseapp.com",
@@ -291,6 +308,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  // --- Add a new sign up ---
   document.getElementById('submitBtn').addEventListener('click', async () => {
       const name = document.getElementById('name').value;
       const date = document.getElementById('date').value;
@@ -299,11 +317,9 @@
 
       if(name && date && item) {
           try {
-              // Show loading state
               btn.textContent = "Saving...";
               btn.disabled = true;
               
-              // Push to Firestore database
               await addDoc(collection(db, "signups"), {
                   name: name,
                   date: date,
@@ -311,25 +327,64 @@
                   timestamp: new Date()
               });
               
-              alert(`Awesome! You're officially signed up to bring ${item} on ${date}.`);
-              
-              // Clear form after success
+              // Clear form
               document.getElementById('name').value = '';
               document.getElementById('item').value = '';
               document.getElementById('date').value = '';
               document.querySelectorAll('.day.friday').forEach(el => el.classList.remove('selected'));
               
           } catch (error) {
-              console.error("Error adding document: ", error);
-              alert("Error saving! Make sure your Firestore database is created and set to Test Mode.");
+              console.error("Error adding doc: ", error);
+              alert("Error saving! Check console.");
           } finally {
-              // Reset button
-              btn.textContent = "Confirm Sign Up";
+              btn.textContent = "Sign Up";
               btn.disabled = false;
           }
       } else {
-          alert("Please select a Friday from the calendar and fill out all fields!");
+          alert("Please select a date and fill out your info!");
       }
+  });
+
+  // --- Listen for live updates & render list ---
+  const signupsContainer = document.getElementById('liveSignups');
+  const q = query(collection(db, "signups"), orderBy("date"));
+
+  onSnapshot(q, (snapshot) => {
+      signupsContainer.innerHTML = ''; // Clear current list
+      
+      if(snapshot.empty) {
+          signupsContainer.innerHTML = '<p style="color: #888; font-size: 0.9rem;">No one has signed up yet. Be the first!</p>';
+          return;
+      }
+
+      snapshot.forEach((firebaseDoc) => {
+          const data = firebaseDoc.data();
+          
+          // Format date to look nicer (e.g., 2026-09-11 -> Sep 11, 2026)
+          const dateObj = new Date(data.date + 'T12:00:00'); // Forces local timezone display
+          const niceDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+          const div = document.createElement('div');
+          div.className = 'signup-item';
+          div.innerHTML = `
+              <div class="signup-details">
+                  <strong>${data.name}</strong>
+                  <span>${niceDate} — ${data.item}</span>
+              </div>
+              <button class="delete-btn" data-id="${firebaseDoc.id}" title="Remove Signup">✕</button>
+          `;
+          signupsContainer.appendChild(div);
+      });
+
+      // Attach delete listeners to newly rendered buttons
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+              const id = e.target.getAttribute('data-id');
+              if(confirm("Are you sure you want to remove this sign-up?")) {
+                  await deleteDoc(doc(db, "signups", id));
+              }
+          });
+      });
   });
 </script>
 
