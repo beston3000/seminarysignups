@@ -6,19 +6,19 @@
     <title>Seminary Breakfast Sign-up</title>
     <style>
         :root {
-            --primary-blue: #0A84FF;
-            --bg-color: #F5F5F7;
-            --card-bg: #FFFFFF;
+            --black: #000000;
+            --white: #ffffff;
+            --light-gray: #f0f0f0;
+            --dark-gray: #666666;
         }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: #1D1D1F;
+            background-color: var(--white);
+            color: var(--black);
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            /* Prevents scrolling while intro plays */
             overflow-x: hidden; 
         }
 
@@ -41,203 +41,167 @@
         #intro-screen {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle, #2d3436 0%, #000000 100%);
+            background: var(--black);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 1000;
-            color: white;
+            color: var(--white);
             transition: opacity 1.5s ease, visibility 1.5s;
-            font-family: serif;
+            font-family: Georgia, serif;
             visibility: visible;
         }
 
-        #intro-screen.hide {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        #intro-content {
-            text-align: center;
-            transform: translateY(15px);
-            z-index: 2;
-        }
-
+        #intro-screen.hide { opacity: 0; visibility: hidden; }
+        #intro-content { text-align: center; transform: translateY(15px); z-index: 2; }
+        
         .cinematic-text-main {
-            font-size: 2.5rem;
-            letter-spacing: 0.3rem;
-            text-transform: uppercase;
-            font-weight: 300;
-            margin-bottom: 0.5rem;
+            font-size: 2.5rem; letter-spacing: 0.2rem;
+            text-transform: uppercase; margin-bottom: 0.5rem;
         }
-
+        
         .cinematic-text-sub {
-            font-size: 1rem;
-            letter-spacing: 0.15rem;
-            opacity: 0.8;
+            font-size: 1.2rem; letter-spacing: 0.1rem; opacity: 0.8;
         }
 
-        #spark-container {
-            position: absolute; width: 100%; height: 100%; z-index: 1;
-        }
-
+        #spark-container { position: absolute; width: 100%; height: 100%; z-index: 1; }
         .spark {
-            position: absolute;
-            width: 4px; height: 4px;
-            background: white; border-radius: 50%;
-            filter: blur(1.5px);
+            position: absolute; width: 4px; height: 4px;
+            background: var(--white); border-radius: 50%; filter: blur(1.5px);
         }
 
-        /* --- Main App Styling --- */
-        /* Hides container until intro finishes */
+        /* --- Main App UI --- */
         body > .container {
-            opacity: 0;
-            transform: translateY(30px);
+            opacity: 0; transform: translateY(30px);
             transition: opacity 2s ease, transform 1s ease-out;
         }
 
-        body.reveal .container {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        body.reveal .container { opacity: 1; transform: translateY(0); }
 
         .container {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 18px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            background: var(--white);
+            padding: 20px;
             margin-top: 20px;
         }
 
         .logo-image {
-            width: 100%;
-            max-width: 250px;
-            display: block;
-            margin: 0 auto 20px auto;
+            width: 100%; max-width: 250px;
+            display: block; margin: 0 auto 30px auto;
         }
 
-        h1 { text-align: center; font-weight: 600; margin-bottom: 25px; }
+        h1 { text-align: center; font-size: 2rem; border-bottom: 4px solid var(--black); padding-bottom: 10px; text-transform: uppercase; margin-bottom: 30px; }
         
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
+        .form-group { margin-bottom: 25px; }
+        label { display: block; margin-bottom: 10px; font-weight: bold; font-size: 1.2rem; }
+        
         input {
-            width: 100%; padding: 12px; border: 1px solid #d2d2d7;
-            border-radius: 10px; box-sizing: border-box; font-size: 16px;
+            width: 100%; padding: 18px; 
+            border: 3px solid var(--black);
+            border-radius: 8px; box-sizing: border-box; 
+            font-size: 1.2rem; outline: none;
+            transition: border-color 0.2s, background-color 0.2s;
         }
+        input:focus { background-color: var(--light-gray); }
 
         button {
-            width: 100%; padding: 14px; background-color: var(--primary-blue);
-            color: white; border: none; border-radius: 10px; font-size: 16px;
-            font-weight: 600; cursor: pointer; transition: background-color 0.2s;
-            margin-top: 10px;
+            width: 100%; padding: 20px; 
+            background-color: var(--black); color: var(--white); 
+            border: none; border-radius: 8px; 
+            font-size: 1.5rem; font-weight: bold; text-transform: uppercase;
+            cursor: pointer; transition: transform 0.1s, background-color 0.2s;
+            margin-top: 20px;
         }
-        button:hover { background-color: #0071E3; }
+        button:hover { background-color: #333; }
+        button:active { transform: scale(0.98); }
+        button:disabled { background-color: #999; cursor: not-allowed; }
 
-        /* --- Calendar Grid --- */
+        /* --- High Contrast Calendar Grid --- */
         .calendar-header {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            font-weight: bold;
-            margin-top: 30px;
-            color: #86868B;
-            font-size: 12px;
-            text-transform: uppercase;
+            display: grid; grid-template-columns: repeat(7, 1fr);
+            text-align: center; font-weight: bold; margin-top: 20px;
+            color: var(--dark-gray); font-size: 1rem; border-bottom: 2px solid var(--black);
+            padding-bottom: 10px;
         }
         
         .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            margin-top: 10px;
+            display: grid; grid-template-columns: repeat(7, 1fr);
+            gap: 10px; margin-top: 15px; margin-bottom: 30px;
         }
 
         .day {
-            background: #f9f9f9;
+            min-height: 80px; padding: 10px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 1.2rem; font-weight: bold; color: #ccc;
             border-radius: 8px;
-            min-height: 80px;
-            padding: 5px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            font-size: 14px;
         }
 
         .day.friday {
-            background: #E8F2FF;
-            border: 1px solid var(--primary-blue);
+            color: var(--black);
+            border: 3px solid var(--black);
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
 
-        .day.friday:hover {
-            background: #D1E5FF;
+        .day.friday:hover { background: var(--light-gray); }
+        
+        .day.friday.selected {
+            background: var(--black);
+            color: var(--white);
         }
 
-        .signup-tag {
-            font-size: 10px;
-            background: var(--primary-blue);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-top: auto;
-            align-self: center;
-            text-align: center;
-            width: 90%;
+        .click-hint {
+            font-size: 0.8rem; font-weight: normal; margin-top: 5px;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
-<!-- High-End Intro Visualization -->
+<!-- Intro Sequence -->
 <div id="intro-screen">
-    <svg id="transition-path" style="width: 150px; height: 150px; fill: white; opacity: 0.8; margin-bottom: 20px; z-index: 2;" viewBox="0 0 100 100">
+    <svg id="transition-path" style="width: 150px; height: 150px; fill: white; margin-bottom: 20px; z-index: 2;" viewBox="0 0 100 100">
         <path d="M50 0 L100 50 L50 100 L0 50 Z" />
     </svg>
-    
     <div id="spark-container"></div>
-    
     <div id="intro-content" class="fade-in-triple-a">
         <h1 class="cinematic-text-main">Seminary Fridays</h1>
-        <p class="cinematic-text-sub">Nourishing Body & Spirit</p>
+        <p class="cinematic-text-sub">Sleek. Simple. Nourishing.</p>
     </div>
 </div>
 
-<!-- Main Application UI -->
+<!-- Main UI -->
 <div class="container">
-    <!-- Drop the black and white logo you downloaded into your folder and update this src -->
     <img src="your-custom-logo.png" alt="Seminary Logo" class="logo-image">
 
     <h1>Breakfast Sign-up</h1>
     
+    <div class="calendar-header">
+        <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+    </div>
+    <div class="calendar-grid" id="calendarGrid">
+        <!-- JavaScript populates real dates here -->
+    </div>
+    
     <div class="form-group">
-        <label for="name">Your Name</label>
-        <input type="text" id="name" placeholder="E.g., Moroni" required>
+        <label for="date">Selected Date</label>
+        <input type="date" id="date" required readonly style="background: #f0f0f0;">
     </div>
 
     <div class="form-group">
-        <label for="date">Which Friday?</label>
-        <input type="date" id="date" required>
+        <label for="name">Your Name</label>
+        <input type="text" id="name" placeholder="E.g., Nephi" required>
     </div>
 
     <div class="form-group">
         <label for="item">What are you bringing?</label>
-        <input type="text" id="item" placeholder="E.g., Cinnamon Rolls & Chocolate Milk" required>
+        <input type="text" id="item" placeholder="E.g., 2 Dozen Bagels" required>
     </div>
 
-    <button id="submitBtn">Commit</button>
-
-    <!-- Calendar View -->
-    <div class="calendar-header">
-        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-    </div>
-    <div class="calendar-grid" id="calendarGrid">
-        <!-- JavaScript populates this -->
-    </div>
+    <button id="submitBtn">Confirm Sign Up</button>
 </div>
 
-<!-- Script for UI Logic, Intro, and Calendar -->
+<!-- UI Logic Script -->
 <script>
+    // --- Intro Sequence ---
     window.addEventListener('load', () => {
-        // 1. Generate spark particles
         const sparks = 30;
         const sparkContainer = document.getElementById('spark-container');
         for (let i = 0; i < sparks; i++) {
@@ -250,71 +214,79 @@
             sparkContainer.appendChild(spark);
         }
 
-        // 2. SVG Shape Transition (Square to Star-ish compass)
         setTimeout(() => {
             const path = document.querySelector('#transition-path path');
             path.setAttribute('d', 'M50 0 L61 35 L100 35 L69 57 L81 91 L50 70 L19 91 L31 57 L0 35 L39 35 Z');
             path.style.transition = 'd 1.5s ease-in-out';
         }, 800);
 
-        // 3. Fade out intro, reveal main app
         setTimeout(() => {
             document.getElementById('intro-screen').classList.add('hide');
             document.body.classList.add('reveal');
         }, 3800);
     });
 
-    // Generate Calendar Grid
+    // --- Smart Calendar Logic ---
     const calendarGrid = document.getElementById('calendarGrid');
-    for(let i = 1; i <= 30; i++) {
+    const dateInput = document.getElementById('date');
+    
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    for(let i = 0; i < firstDay; i++) {
+        const emptyDiv = document.createElement('div');
+        calendarGrid.appendChild(emptyDiv);
+    }
+
+    for(let i = 1; i <= daysInMonth; i++) {
         const dayDiv = document.createElement('div');
         dayDiv.classList.add('day');
+        
+        const currentDate = new Date(year, month, i);
         dayDiv.textContent = i;
         
-        // Mock Fridays for layout visualization
-        if (i === 4 || i === 11 || i === 18 || i === 25) {
+        if (currentDate.getDay() === 5) {
             dayDiv.classList.add('friday');
             
-            // Allow clicking a Friday to auto-fill the date input (Mock setup)
-            dayDiv.addEventListener('click', () => {
-                // In a real app, calculate the actual date string (YYYY-MM-DD)
-                alert(`You selected Friday the ${i}th!`);
-            });
+            const hint = document.createElement('div');
+            hint.classList.add('click-hint');
+            hint.textContent = "Select";
+            dayDiv.appendChild(hint);
+            
+            dayDiv.addEventListener('click', function() {
+                document.querySelectorAll('.day.friday').forEach(el => el.classList.remove('selected'));
+                this.classList.add('selected');
 
-            if(i === 11) {
-                const tag = document.createElement('div');
-                tag.classList.add('signup-tag');
-                tag.textContent = "Brother Smith: Muffins";
-                dayDiv.appendChild(tag);
-            }
+                const formattedMonth = String(month + 1).padStart(2, '0');
+                const formattedDay = String(i).padStart(2, '0');
+                dateInput.value = `${year}-${formattedMonth}-${formattedDay}`;
+                
+                document.getElementById('name').focus();
+            });
         }
         calendarGrid.appendChild(dayDiv);
     }
 </script>
 
-<!-- Script for Firebase Connection -->
+<!-- Firebase Connection Script -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
   import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-  // TODO: Replace this with your actual Firebase config keys from the Firebase Console
+  // Your actual Firebase Config
   const firebaseConfig = {
-
-  apiKey: "AIzaSyDR4--N5B5jKcrEb6nMzlIiTianU2kFMOU",
-
-  authDomain: "seminarysignups.firebaseapp.com",
-
-  projectId: "seminarysignups",
-
-  storageBucket: "seminarysignups.firebasestorage.app",
-
-  messagingSenderId: "22098394544",
-
-  appId: "1:22098394544:web:310530f12eb50d1e232a75",
-
-  measurementId: "G-H9039RGE0G"
-
-};
+    apiKey: "AIzaSyDR4--N5B5jKcrEb6nMzlIiTianU2kFMOU",
+    authDomain: "seminarysignups.firebaseapp.com",
+    projectId: "seminarysignups",
+    storageBucket: "seminarysignups.firebasestorage.app",
+    messagingSenderId: "22098394544",
+    appId: "1:22098394544:web:310530f12eb50d1e232a75",
+    measurementId: "G-H9039RGE0G"
+  };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -323,12 +295,40 @@
       const name = document.getElementById('name').value;
       const date = document.getElementById('date').value;
       const item = document.getElementById('item').value;
+      const btn = document.getElementById('submitBtn');
 
       if(name && date && item) {
-          alert(`Awesome, ${name}! You are signed up to bring ${item} on ${date}. (Firebase hookup pending!)`);
-          // Future code to push 'name', 'date', and 'item' to Firestore goes here
+          try {
+              // Show loading state
+              btn.textContent = "Saving...";
+              btn.disabled = true;
+              
+              // Push to Firestore database
+              await addDoc(collection(db, "signups"), {
+                  name: name,
+                  date: date,
+                  item: item,
+                  timestamp: new Date()
+              });
+              
+              alert(`Awesome! You're officially signed up to bring ${item} on ${date}.`);
+              
+              // Clear form after success
+              document.getElementById('name').value = '';
+              document.getElementById('item').value = '';
+              document.getElementById('date').value = '';
+              document.querySelectorAll('.day.friday').forEach(el => el.classList.remove('selected'));
+              
+          } catch (error) {
+              console.error("Error adding document: ", error);
+              alert("Error saving! Make sure your Firestore database is created and set to Test Mode.");
+          } finally {
+              // Reset button
+              btn.textContent = "Confirm Sign Up";
+              btn.disabled = false;
+          }
       } else {
-          alert("Please fill out all fields!");
+          alert("Please select a Friday from the calendar and fill out all fields!");
       }
   });
 </script>
