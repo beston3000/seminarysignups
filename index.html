@@ -108,10 +108,15 @@
         .form-section { background: var(--white); display: flex; flex-direction: column; justify-content: center;}
         @media (min-width: 768px) { .form-section { border-left: 1px solid var(--gray-200); } }
 
-        h1 { 
-            font-family: var(--font-display); font-size: 1.8rem; font-weight: normal; 
-            color: var(--black); margin-bottom: 30px; letter-spacing: -0.5px;
-        }
+        /* Month Navigation Header */
+        .month-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .month-nav h1 { font-family: var(--font-display); font-size: 1.6rem; font-weight: normal; margin: 0; letter-spacing: -0.5px; }
+        .nav-btn { background: none; border: 1px solid var(--gray-200); border-radius: 10px; width: 40px; height: 40px; cursor: pointer; transition: all 0.2s; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
+        .nav-btn:hover { border-color: var(--black); background: var(--gray-100); }
+        .nav-btn:active { transform: scale(0.95); }
+
+        /* Form Header */
+        h2.form-title { font-family: var(--font-display); font-size: 1.8rem; font-weight: normal; margin-bottom: 30px; letter-spacing: -0.5px; }
 
         /* --- Minimalist Calendar Grid --- */
         .calendar-header {
@@ -225,8 +230,15 @@
         
         <!-- Calendar Section -->
         <div class="section calendar-section">
-            <img src="your-custom-logo.png" alt="Logo" style="width: 100%; max-width: 80px; margin: 0 auto 30px auto; display: block; mix-blend-mode: multiply;">
-            <h1>Select a Friday</h1>
+            <img src="your-custom-logo.png" alt="Logo" style="width: 100%; max-width: 80px; margin: 0 auto 20px auto; display: block; mix-blend-mode: multiply;">
+            
+            <!-- Month Navigation -->
+            <div class="month-nav">
+                <button id="prevMonth" class="nav-btn">&#8249;</button>
+                <h1 id="monthDisplay">Month</h1>
+                <button id="nextMonth" class="nav-btn">&#8250;</button>
+            </div>
+
             <div class="calendar-header">
                 <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
             </div>
@@ -237,7 +249,7 @@
 
         <!-- Form Section -->
         <div class="section form-section">
-            <h1>Commit</h1>
+            <h2 class="form-title">Commit</h2>
             
             <div class="form-group">
                 <label for="date">Selected Date</label>
@@ -260,8 +272,29 @@
     </div>
 </div>
 
-<script>
-    // iOS Double-tap Zoom Fix
+<script type="module">
+    // Import Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+    // --- Firebase Setup ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyDR4--N5B5jKcrEb6nMzlIiTianU2kFMOU",
+        authDomain: "seminarysignups.firebaseapp.com",
+        projectId: "seminarysignups",
+        storageBucket: "seminarysignups.firebasestorage.app",
+        messagingSenderId: "22098394544",
+        appId: "1:22098394544:web:310530f12eb50d1e232a75",
+        measurementId: "G-H9039RGE0G"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Global variable to store all claims locally so we can redraw the calendar without re-fetching
+    let allClaims = [];
+
+    // --- iOS Double-tap Zoom Fix ---
     document.addEventListener('dblclick', function(event) { event.preventDefault(); }, { passive: false });
 
     // --- Fast B&W Intro ---
@@ -283,164 +316,172 @@
         }, 2000); 
     });
 
-    // --- Smart Calendar Logic ---
+    // --- Calendar Generation & Month Navigation ---
+    let currentNavDate = new Date();
     const calendarGrid = document.getElementById('calendarGrid');
-    const dateInput = document.getElementById('date');
-    
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
-    
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const monthDisplay = document.getElementById('monthDisplay');
 
-    for(let i = 0; i < firstDay; i++) {
-        calendarGrid.appendChild(document.createElement('div'));
-    }
-
-    for(let i = 1; i <= daysInMonth; i++) {
-        const dayDiv = document.createElement('div');
-        dayDiv.classList.add('day');
-        dayDiv.textContent = i;
+    function renderCalendar() {
+        const year = currentNavDate.getFullYear();
+        const month = currentNavDate.getMonth();
         
-        if (new Date(year, month, i).getDay() === 5) {
-            dayDiv.classList.add('friday');
-            
-            const formattedMonth = String(month + 1).padStart(2, '0');
-            const formattedDay = String(i).padStart(2, '0');
-            const exactDate = `${year}-${formattedMonth}-${formattedDay}`;
-            dayDiv.dataset.date = exactDate;
-            
-            const hint = document.createElement('div');
-            hint.classList.add('click-hint');
-            hint.textContent = "Open";
-            dayDiv.appendChild(hint);
+        // Update Header Text
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        monthDisplay.textContent = `${monthNames[month]} ${year}`;
+
+        // Clear existing grid
+        calendarGrid.innerHTML = '';
+        
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        // Add empty slots for days before the 1st
+        for(let i = 0; i < firstDay; i++) {
+            calendarGrid.appendChild(document.createElement('div'));
         }
-        calendarGrid.appendChild(dayDiv);
+
+        // Add actual days
+        for(let i = 1; i <= daysInMonth; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.classList.add('day');
+            dayDiv.textContent = i;
+            
+            if (new Date(year, month, i).getDay() === 5) {
+                dayDiv.classList.add('friday');
+                
+                const formattedMonth = String(month + 1).padStart(2, '0');
+                const formattedDay = String(i).padStart(2, '0');
+                const exactDate = `${year}-${formattedMonth}-${formattedDay}`;
+                dayDiv.dataset.date = exactDate;
+                
+                const hint = document.createElement('div');
+                hint.classList.add('click-hint');
+                hint.textContent = "Open";
+                dayDiv.appendChild(hint);
+
+                // Default Click Logic (Unclaimed)
+                dayDiv.onclick = function() {
+                    if(!this.classList.contains('claimed')) {
+                        document.querySelectorAll('.day.friday').forEach(d => d.classList.remove('selected'));
+                        this.classList.add('selected');
+                        document.getElementById('date').value = this.dataset.date;
+                        
+                        if(window.innerWidth < 768) {
+                            document.getElementById('name').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                        document.getElementById('name').focus();
+                    }
+                };
+            }
+            calendarGrid.appendChild(dayDiv);
+        }
+
+        // After drawing the grid, apply the claims from our local Firebase array
+        applyClaimsToUI();
     }
 
-    // Modal Close Logic
+    // Navigation Listeners
+    document.getElementById('prevMonth').addEventListener('click', () => {
+        currentNavDate.setMonth(currentNavDate.getMonth() - 1);
+        renderCalendar();
+    });
+    
+    document.getElementById('nextMonth').addEventListener('click', () => {
+        currentNavDate.setMonth(currentNavDate.getMonth() + 1);
+        renderCalendar();
+    });
+
+    // Initial render
+    renderCalendar();
+
+    // --- Applying Firebase Data to the Calendar ---
+    function applyClaimsToUI() {
+        allClaims.forEach((data) => {
+            // Check if the claimed date exists in the CURRENT rendered month
+            const targetDay = document.querySelector(`.day.friday[data-date="${data.date}"]`);
+            
+            if(targetDay) {
+                targetDay.classList.add('claimed');
+                targetDay.classList.remove('selected');
+                targetDay.querySelector('.click-hint').textContent = "Claimed";
+                
+                targetDay.onclick = function() {
+                    const dateObj = new Date(data.date + 'T12:00:00');
+                    const niceDate = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+                    
+                    document.getElementById('modalDate').textContent = niceDate;
+                    document.getElementById('modalName').textContent = data.name;
+                    
+                    const itemText = (data.item || "").trim();
+                    document.getElementById('modalItem').textContent = itemText !== "" ? `Bringing: ${itemText}` : "Item: TBD";
+                    
+                    const deleteBtn = document.getElementById('modalDeleteBtn');
+                    deleteBtn.onclick = async () => {
+                        if(confirm("Remove this sign-up?")) {
+                            await deleteDoc(doc(db, "signups", data.id));
+                            document.getElementById('claimModal').classList.remove('active');
+                        }
+                    };
+
+                    document.getElementById('claimModal').classList.add('active');
+                };
+            }
+        });
+    }
+
+    // --- Firebase Listener ---
+    const q = query(collection(db, "signups"));
+    onSnapshot(q, (snapshot) => {
+        allClaims = []; // Reset local array
+        snapshot.forEach((firebaseDoc) => {
+            let docData = firebaseDoc.data();
+            docData.id = firebaseDoc.id; // Store ID for deletion
+            allClaims.push(docData);
+        });
+        // Re-render the calendar to cleanly apply the new data state
+        renderCalendar();
+    });
+
+    // --- Modal Close Logic ---
     const modal = document.getElementById('claimModal');
     document.getElementById('modalCloseBtn').addEventListener('click', () => {
         modal.classList.remove('active');
     });
-</script>
 
-<!-- Firebase Connection -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+    // --- Submitting Sign Up ---
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+        const name = document.getElementById('name').value.trim();
+        const date = document.getElementById('date').value;
+        const item = document.getElementById('item').value.trim(); 
+        const btn = document.getElementById('submitBtn');
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDR4--N5B5jKcrEb6nMzlIiTianU2kFMOU",
-    authDomain: "seminarysignups.firebaseapp.com",
-    projectId: "seminarysignups",
-    storageBucket: "seminarysignups.firebasestorage.app",
-    messagingSenderId: "22098394544",
-    appId: "1:22098394544:web:310530f12eb50d1e232a75",
-    measurementId: "G-H9039RGE0G"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // --- Submitting Sign Up ---
-  document.getElementById('submitBtn').addEventListener('click', async () => {
-      const name = document.getElementById('name').value.trim();
-      const date = document.getElementById('date').value;
-      const item = document.getElementById('item').value.trim(); 
-      const btn = document.getElementById('submitBtn');
-
-      if(name && date) {
-          try {
-              btn.textContent = "Saving...";
-              btn.disabled = true;
-              
-              await addDoc(collection(db, "signups"), {
-                  name: name,
-                  date: date,
-                  item: item, 
-                  timestamp: new Date()
-              });
-              
-              document.getElementById('name').value = '';
-              document.getElementById('item').value = '';
-              document.getElementById('date').value = '';
-              document.querySelectorAll('.day.friday').forEach(el => el.classList.remove('selected'));
-              
-          } catch (error) {
-              console.error("Error adding doc: ", error);
-              alert("Error saving! Check console.");
-          } finally {
-              btn.textContent = "Confirm Sign-up";
-              btn.disabled = false;
-          }
-      } else {
-          alert("Please select a date and enter your name!");
-      }
-  });
-
-  // --- Live Calendar Sync ---
-  const q = query(collection(db, "signups"));
-
-  onSnapshot(q, (snapshot) => {
-      document.querySelectorAll('.day.friday').forEach(el => {
-          el.classList.remove('claimed');
-          el.querySelector('.click-hint').textContent = "Open";
-          delete el.dataset.claimId; 
-          delete el.dataset.claimItem;
-          delete el.dataset.claimName;
-          
-          el.onclick = function() {
-              if(!this.classList.contains('claimed')) {
-                  document.querySelectorAll('.day.friday').forEach(d => d.classList.remove('selected'));
-                  this.classList.add('selected');
-                  document.getElementById('date').value = this.dataset.date;
-                  
-                  if(window.innerWidth < 768) {
-                      document.getElementById('name').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }
-                  document.getElementById('name').focus();
-              }
-          };
-      });
-
-      snapshot.forEach((firebaseDoc) => {
-          const data = firebaseDoc.data();
-          const targetDay = document.querySelector(`.day.friday[data-date="${data.date}"]`);
-          
-          if(targetDay) {
-              targetDay.classList.add('claimed');
-              targetDay.classList.remove('selected');
-              targetDay.querySelector('.click-hint').textContent = "Claimed";
-              
-              targetDay.dataset.claimId = firebaseDoc.id;
-              targetDay.dataset.claimName = data.name;
-              targetDay.dataset.claimItem = data.item || ""; 
-              
-              targetDay.onclick = function() {
-                  const dateObj = new Date(this.dataset.date + 'T12:00:00');
-                  const niceDate = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-                  
-                  document.getElementById('modalDate').textContent = niceDate;
-                  document.getElementById('modalName').textContent = this.dataset.claimName;
-                  
-                  const itemText = this.dataset.claimItem.trim();
-                  document.getElementById('modalItem').textContent = itemText !== "" ? `Bringing: ${itemText}` : "Item: TBD";
-                  
-                  const deleteBtn = document.getElementById('modalDeleteBtn');
-                  deleteBtn.onclick = async () => {
-                      if(confirm("Remove this sign-up?")) {
-                          await deleteDoc(doc(db, "signups", this.dataset.claimId));
-                          document.getElementById('claimModal').classList.remove('active');
-                      }
-                  };
-
-                  document.getElementById('claimModal').classList.add('active');
-              };
-          }
-      });
-  });
+        if(name && date) {
+            try {
+                btn.textContent = "Saving...";
+                btn.disabled = true;
+                
+                await addDoc(collection(db, "signups"), {
+                    name: name,
+                    date: date,
+                    item: item, 
+                    timestamp: new Date()
+                });
+                
+                document.getElementById('name').value = '';
+                document.getElementById('item').value = '';
+                document.getElementById('date').value = '';
+                
+            } catch (error) {
+                console.error("Error adding doc: ", error);
+                alert("Error saving! Check console.");
+            } finally {
+                btn.textContent = "Confirm Sign-up";
+                btn.disabled = false;
+            }
+        } else {
+            alert("Please select a date and enter your name!");
+        }
+    });
 </script>
 
 </body>
