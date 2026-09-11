@@ -3,248 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Seminary Fridays</title>
+    <title>Seminary Signups</title>
     <style>
         :root {
-            /* Premium Dawn Palette */
-            --navy: #0B192C;
-            --navy-hover: #163052;
-            --gold: #D97706;
-            --gold-light: #FEF3C7;
-            --bg-color: #F8F9FA;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --text-main: #1E293B;
-            --text-muted: #64748B;
-            --border: #E2E8F0;
-            --danger: #DC2626;
-            --danger-bg: #FEF2F2;
+            /* Ultra-Minimalist B&W Palette */
+            --black: #000000;
+            --white: #ffffff;
+            --gray-100: #F7F7F7;
+            --gray-200: #EBEBEB;
+            --gray-300: #D1D1D1;
+            --gray-500: #888888;
             
             /* Typography */
-            --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-display: "Georgia", "Times New Roman", serif;
+            --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
         
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: var(--font-sans);
-            /* Soft morning ambient background */
-            background: 
-                radial-gradient(circle at 15% 10%, #FFF5EB 0%, transparent 40%),
-                radial-gradient(circle at 85% 90%, #F0F4F8 0%, transparent 40%),
-                var(--bg-color);
-            color: var(--text-main);
-            margin: 0; padding: 15px;
+            font-family: var(--font-ui);
+            background-color: var(--gray-100);
+            color: var(--black);
+            padding: 15px;
             overflow-x: hidden;
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* --- NATURE / SCRIPTURE ACTION INTRO --- */
+        /* --- B&W CINEMATIC INTRO --- */
         #intro-screen {
             position: fixed; inset: 0;
-            background: #050A10; /* Deep pre-dawn blue */
+            background: var(--black);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 1000; overflow: hidden;
             transition: opacity 0.5s ease;
         }
         #intro-screen.hide { opacity: 0; pointer-events: none; }
 
-        /* The Horizon Beam (Now White & Disappears) */
         .horizon-beam {
-            position: absolute; top: 50%; left: 0; right: 0; height: 2px;
-            background: #FFFFFF;
-            box-shadow: 0 0 40px 10px rgba(255,255,255,0.8), 0 0 100px 30px rgba(255,255,255,0.4);
+            position: absolute; top: 50%; left: 0; right: 0; height: 1px;
+            background: var(--white);
+            box-shadow: 0 0 20px 5px rgba(255,255,255,0.8), 0 0 60px 20px rgba(255,255,255,0.4);
             transform: scaleX(0);
-            /* Stretched to 0.8s to handle the fade out */
             animation: beamStrike 0.8s cubic-bezier(0.85, 0, 0.15, 1) forwards;
         }
         
-        /* The Sunburst Expansion (Now White) */
         .sunburst {
             position: absolute; top: 50%; left: 50%;
             width: 100vw; height: 100vw;
-            background: radial-gradient(circle, #FFFFFF 0%, rgba(255,255,255,0.9) 20%, transparent 60%);
+            background: radial-gradient(circle, var(--white) 0%, rgba(255,255,255,0.8) 20%, transparent 60%);
             transform: translate(-50%, -50%) scale(0);
             opacity: 0; mix-blend-mode: screen;
-            animation: burstOpen 1.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.3s forwards;
+            animation: burstOpen 1s cubic-bezier(0.165, 0.84, 0.44, 1) 0.3s forwards;
         }
 
-        /* Floating Light Motes (Spirit/Nature) */
         .motes-container { position: absolute; inset: 0; z-index: 2; perspective: 600px; }
         .mote {
             position: absolute; bottom: -20px;
-            width: 4px; height: 4px; background: #FFF; border-radius: 50%;
-            box-shadow: 0 0 10px 2px #FFFFFF; opacity: 0;
+            width: 3px; height: 3px; background: var(--white); border-radius: 50%;
+            box-shadow: 0 0 8px 2px rgba(255,255,255,0.8); opacity: 0;
             animation: floatUp 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
 
-        /* Scripture Typography */
         .intro-text {
             position: relative; z-index: 3;
-            font-family: var(--font-serif);
-            font-size: clamp(2.5rem, 8vw, 4rem); font-style: italic;
-            color: #FFFFFF; text-align: center;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(255, 255, 255, 0.8);
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 6vw, 3.5rem); letter-spacing: -0.5px;
+            color: var(--white); text-align: center;
             opacity: 0; transform: translateY(20px) scale(0.95);
-            animation: textRise 1.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.5s forwards;
+            animation: textRise 1s cubic-bezier(0.165, 0.84, 0.44, 1) 0.5s forwards;
         }
 
-        /* Updated Beam Animation to fade out at the end */
-        @keyframes beamStrike { 
-            0% { transform: scaleX(0); opacity: 1; } 
-            40% { transform: scaleX(1); opacity: 1; } 
-            80% { transform: scaleX(1); opacity: 0; } 
-            100% { transform: scaleX(1); opacity: 0; } 
-        }
-        
-        @keyframes burstOpen { 
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 
-            30% { opacity: 0.8; } 
-            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; } 
-        }
-        
-        @keyframes floatUp { 
-            0% { transform: translateY(0) scale(0.5); opacity: 0; } 
-            20% { opacity: 1; } 
-            100% { transform: translateY(-200px) scale(1.5); opacity: 0; } 
-        }
-        
-        @keyframes textRise { 
-            0% { opacity: 0; transform: translateY(20px) scale(0.95); } 
-            100% { opacity: 1; transform: translateY(0) scale(1); } 
-        }
+        @keyframes beamStrike { 0% { transform: scaleX(0); opacity: 1; } 40% { transform: scaleX(1); opacity: 1; } 80% { transform: scaleX(1); opacity: 0; } 100% { transform: scaleX(1); opacity: 0; } }
+        @keyframes burstOpen { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 30% { opacity: 1; } 100% { transform: translate(-50%, -50%) scale(2); opacity: 0; } }
+        @keyframes floatUp { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-200px); opacity: 0; } }
+        @keyframes textRise { 0% { opacity: 0; transform: translateY(20px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
 
-        /* --- TRIPLE-A MAIN APP UI --- */
+        /* --- OPTIMAL MAIN UI --- */
         .app-wrapper {
-            opacity: 0; transform: scale(0.97) translateY(15px);
-            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-            width: 100%; max-width: 900px; z-index: 10; position: relative;
+            opacity: 0; transform: scale(0.98) translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            width: 100%; max-width: 900px; position: relative;
         }
         body.reveal .app-wrapper { opacity: 1; transform: scale(1) translateY(0); }
 
         .card-container {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-radius: 28px; 
-            box-shadow: 0 25px 50px -12px rgba(11, 25, 44, 0.1), 0 0 0 1px rgba(255,255,255,0.6) inset;
+            background: var(--white);
+            border-radius: 20px; 
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0,0,0,0.02);
             overflow: hidden; display: grid; grid-template-columns: 1fr;
         }
 
         @media (min-width: 768px) {
-            .card-container { grid-template-columns: 1.1fr 1fr; border-radius: 32px; }
+            .card-container { grid-template-columns: 1fr 1fr; border-radius: 24px; }
             body { padding: 40px; }
         }
 
-        .section { padding: 30px 20px; }
-        @media (min-width: 768px) { .section { padding: 45px; } }
+        .section { padding: 35px 25px; }
+        @media (min-width: 768px) { .section { padding: 50px 45px; } }
         
-        .form-section { background: rgba(248, 249, 250, 0.6); border-top: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center;}
-        @media (min-width: 768px) { .form-section { border-top: none; border-left: 1px solid var(--border); } }
+        .calendar-section { background: var(--white); }
+        .form-section { background: var(--white); display: flex; flex-direction: column; justify-content: center;}
+        @media (min-width: 768px) { .form-section { border-left: 1px solid var(--gray-200); } }
 
         h1 { 
-            font-family: var(--font-serif); font-size: 1.8rem; font-weight: normal; 
-            color: var(--navy); margin-top: 0; margin-bottom: 25px; 
-            border-bottom: 1px solid var(--border); padding-bottom: 15px; 
+            font-family: var(--font-display); font-size: 1.8rem; font-weight: normal; 
+            color: var(--black); margin-bottom: 30px; letter-spacing: -0.5px;
         }
 
-        /* --- Premium Calendar Grid --- */
+        /* --- Minimalist Calendar Grid --- */
         .calendar-header {
             display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; 
-            font-weight: 600; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;
-            padding-bottom: 12px;
+            font-weight: 600; color: var(--gray-500); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px;
+            padding-bottom: 15px; border-bottom: 1px solid var(--gray-200);
         }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 10px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 15px; }
         @media (min-width: 768px) { .calendar-grid { gap: 8px; } }
 
         .day {
             aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 1rem; font-weight: 500; color: #CBD5E1; border-radius: 12px; user-select: none;
+            font-size: 1rem; font-weight: 500; color: var(--gray-300); border-radius: 12px; user-select: none;
         }
 
-        /* The Friday Tiles */
+        /* Interactive Fridays */
         .day.friday {
-            color: var(--navy); border: 1px solid var(--border); cursor: pointer;
-            background: #FFFFFF; transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            color: var(--black); border: 2px solid var(--gray-200); cursor: pointer;
+            background: var(--white); transition: all 0.2s ease;
         }
 
-        @media (hover: hover) { .day.friday:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 6px 12px rgba(217, 119, 6, 0.1); } }
+        @media (hover: hover) { .day.friday:hover { border-color: var(--black); transform: translateY(-2px); } }
         .day.friday:active { transform: scale(0.95); }
         
-        /* Selected State (Gold) */
+        /* Selected State */
         .day.friday.selected { 
-            background: var(--gold-light); border-color: var(--gold); color: var(--gold); 
-            transform: scale(1.05); font-weight: bold; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15);
+            border-color: var(--black); background: var(--gray-100); 
+            transform: scale(1.05); font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
         
-        /* Claimed State (Navy) */
-        .day.friday.claimed { background: var(--navy); color: #FFF; border-color: var(--navy); }
-        .day.friday.claimed .click-hint { color: rgba(255,255,255,0.6); }
+        /* Claimed State */
+        .day.friday.claimed { background: var(--black); color: var(--white); border-color: var(--black); }
+        .day.friday.claimed .click-hint { color: var(--gray-500); }
 
         .click-hint { font-size: 0.55rem; text-transform: uppercase; margin-top: 4px; font-weight: 700; letter-spacing: 0.5px; }
 
-        /* --- Forms & Inputs --- */
-        .form-group { margin-bottom: 22px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
+        /* --- Refined Forms --- */
+        .form-group { margin-bottom: 24px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; color: var(--gray-500); letter-spacing: 1px; }
         
         input {
-            width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 14px;
+            width: 100%; padding: 16px 18px; border: 2px solid transparent; border-radius: 12px;
             font-size: 16px; /* Prevents iOS zoom */
-            outline: none; transition: all 0.2s; background: #FFFFFF; color: var(--text-main); font-weight: 500;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02) inset;
+            outline: none; transition: all 0.2s; background: var(--gray-100); color: var(--black); font-weight: 500;
         }
-        input:focus { border-color: var(--gold); box-shadow: 0 0 0 4px var(--gold-light), 0 2px 4px rgba(0,0,0,0.02) inset; }
-        input[readonly] { background: #F1F5F9; color: var(--text-muted); border-color: transparent; }
+        input:focus { border-color: var(--black); background: var(--white); }
+        input[readonly] { background: var(--white); color: var(--gray-500); border: 1px dashed var(--gray-300); }
 
-        /* The Primary Button */
+        /* Solid Black Button */
         button.primary-btn {
-            width: 100%; padding: 18px; background: linear-gradient(135deg, var(--navy) 0%, #1a365d 100%);
-            color: #FFF; border: none; border-radius: 14px; 
-            font-size: 1.05rem; font-weight: 600; letter-spacing: 0.5px; cursor: pointer; 
-            transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1); margin-top: 8px;
-            box-shadow: 0 4px 15px rgba(11, 25, 44, 0.2);
+            width: 100%; padding: 18px; background: var(--black);
+            color: var(--white); border: none; border-radius: 12px; 
+            font-size: 1rem; font-weight: 600; letter-spacing: 0.5px; cursor: pointer; 
+            transition: all 0.2s ease; margin-top: 10px;
         }
-        button.primary-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(11, 25, 44, 0.3); }
-        button.primary-btn:active { transform: scale(0.98); box-shadow: 0 2px 10px rgba(11, 25, 44, 0.2); }
+        button.primary-btn:hover { background: #222; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); }
+        button.primary-btn:active { transform: scale(0.98); box-shadow: none; }
 
-        /* --- Triple-A Modal --- */
+        /* --- Minimalist Modal --- */
         .modal-overlay {
             position: fixed; inset: 0;
-            background: rgba(11, 25, 44, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
             display: flex; justify-content: center; align-items: center;
             z-index: 2000; opacity: 0; visibility: hidden; transition: 0.3s ease; padding: 20px;
         }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         
         .modal-content {
-            background: #FFF; padding: 35px 25px; border-radius: 28px; width: 100%; max-width: 340px; text-align: center; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3); transform: scale(0.95) translateY(15px); transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            background: var(--white); padding: 40px 30px; border-radius: 20px; width: 100%; max-width: 360px; text-align: center; 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); transform: scale(0.95) translateY(10px); transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
         .modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
         
-        .modal-date { font-size: 0.8rem; color: var(--gold); text-transform: uppercase; font-weight: 700; margin-bottom: 12px; letter-spacing: 1px; }
-        .modal-title { font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 10px; color: var(--navy); }
-        .modal-subtitle { color: var(--text-main); margin-bottom: 25px; font-size: 1rem; font-weight: 500; background: var(--bg-color); padding: 12px; border-radius: 12px; }
+        .modal-date { font-size: 0.75rem; color: var(--gray-500); text-transform: uppercase; font-weight: 600; margin-bottom: 15px; letter-spacing: 1.5px; }
+        .modal-title { font-family: var(--font-display); font-size: 2rem; margin-bottom: 10px; color: var(--black); letter-spacing: -0.5px; }
+        .modal-subtitle { color: var(--black); margin-bottom: 30px; font-size: 1rem; font-weight: 500; background: var(--gray-100); padding: 15px; border-radius: 12px; }
         
-        .modal-btn { width: 100%; padding: 15px; border-radius: 12px; font-weight: 600; cursor: pointer; border: none; font-size: 1rem; transition: all 0.2s; }
-        .modal-close-btn { background: var(--bg-color); color: var(--text-main); margin-bottom: 10px; border: 1px solid var(--border); }
-        .modal-close-btn:active { background: var(--border); transform: scale(0.98); }
-        .modal-delete-btn { background: var(--danger-bg); color: var(--danger); font-weight: 500; }
-        .modal-delete-btn:active { background: #FEE2E2; transform: scale(0.98); }
+        .modal-btn { width: 100%; padding: 16px; border-radius: 12px; font-weight: 600; cursor: pointer; border: none; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; }
+        .modal-close-btn { background: var(--white); color: var(--black); margin-bottom: 12px; border: 2px solid var(--gray-200); }
+        .modal-close-btn:hover { border-color: var(--black); }
+        .modal-close-btn:active { transform: scale(0.98); }
+        .modal-delete-btn { background: var(--white); color: #DC2626; border: 2px solid #FEE2E2; }
+        .modal-delete-btn:hover { background: #FEF2F2; border-color: #DC2626; }
+        .modal-delete-btn:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
 
-<!-- Nature/Scripture Action Intro (Very Fast) -->
+<!-- B&W Cinematic Intro -->
 <div id="intro-screen">
     <div class="horizon-beam"></div>
     <div class="sunburst"></div>
     <div class="motes-container" id="motes"></div>
-    <div class="intro-text">Seminary Fridays</div>
+    <div class="intro-text">Seminary Signups</div>
 </div>
 
-<!-- Modal Popup -->
+<!-- Minimalist Modal Popup -->
 <div class="modal-overlay" id="claimModal">
     <div class="modal-content">
         <div class="modal-date" id="modalDate">Oct 13</div>
@@ -261,6 +225,7 @@
         
         <!-- Calendar Section -->
         <div class="section calendar-section">
+            <img src="your-custom-logo.png" alt="Logo" style="width: 100%; max-width: 80px; margin: 0 auto 30px auto; display: block; mix-blend-mode: multiply;">
             <h1>Select a Friday</h1>
             <div class="calendar-header">
                 <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
@@ -275,7 +240,7 @@
             <h1>Commit</h1>
             
             <div class="form-group">
-                <label for="date">Selected Date (Tap Calendar)</label>
+                <label for="date">Selected Date</label>
                 <input type="date" id="date" required readonly>
             </div>
 
@@ -285,7 +250,7 @@
             </div>
 
             <div class="form-group">
-                <label for="item">What are you bringing? <span style="font-weight: normal; color: var(--text-muted);">(Optional)</span></label>
+                <label for="item">Bringing what? <span style="font-weight: normal; color: var(--gray-500); text-transform: none; letter-spacing: 0;">(Optional)</span></label>
                 <input type="text" id="item" placeholder="E.g., Bagels & Juice" autocomplete="off">
             </div>
 
@@ -299,11 +264,10 @@
     // iOS Double-tap Zoom Fix
     document.addEventListener('dblclick', function(event) { event.preventDefault(); }, { passive: false });
 
-    // --- High-Action, Fast Nature Intro ---
+    // --- Fast B&W Intro ---
     window.addEventListener('load', () => {
-        // Generate floating light motes
         const motesContainer = document.getElementById('motes');
-        for(let i=0; i<30; i++) {
+        for(let i=0; i<25; i++) {
             let mote = document.createElement('div');
             mote.className = 'mote';
             mote.style.left = `${Math.random() * 100}%`;
@@ -311,13 +275,12 @@
             motesContainer.appendChild(mote);
         }
 
-        // Extremely fast cut to the app. No unnecessary waiting.
         setTimeout(() => {
             const intro = document.getElementById('intro-screen');
             intro.classList.add('hide');
             document.body.classList.add('reveal');
-            setTimeout(() => intro.remove(), 500); // Clean up DOM
-        }, 2200); // Intro completes in just over 2 seconds
+            setTimeout(() => intro.remove(), 500); 
+        }, 2000); 
     });
 
     // --- Smart Calendar Logic ---
