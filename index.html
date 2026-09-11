@@ -50,20 +50,21 @@
         }
         #intro-screen.hide { opacity: 0; pointer-events: none; }
 
-        /* The Horizon Beam */
+        /* The Horizon Beam (Now White & Disappears) */
         .horizon-beam {
             position: absolute; top: 50%; left: 0; right: 0; height: 2px;
-            background: #FDE68A;
-            box-shadow: 0 0 40px 10px #D97706, 0 0 100px 30px #F59E0B;
+            background: #FFFFFF;
+            box-shadow: 0 0 40px 10px rgba(255,255,255,0.8), 0 0 100px 30px rgba(255,255,255,0.4);
             transform: scaleX(0);
-            animation: beamStrike 0.4s cubic-bezier(0.85, 0, 0.15, 1) forwards;
+            /* Stretched to 0.8s to handle the fade out */
+            animation: beamStrike 0.8s cubic-bezier(0.85, 0, 0.15, 1) forwards;
         }
         
-        /* The Sunburst Expansion */
+        /* The Sunburst Expansion (Now White) */
         .sunburst {
             position: absolute; top: 50%; left: 50%;
             width: 100vw; height: 100vw;
-            background: radial-gradient(circle, #FFFBEB 0%, #F59E0B 30%, transparent 70%);
+            background: radial-gradient(circle, #FFFFFF 0%, rgba(255,255,255,0.9) 20%, transparent 60%);
             transform: translate(-50%, -50%) scale(0);
             opacity: 0; mix-blend-mode: screen;
             animation: burstOpen 1.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.3s forwards;
@@ -74,7 +75,7 @@
         .mote {
             position: absolute; bottom: -20px;
             width: 4px; height: 4px; background: #FFF; border-radius: 50%;
-            box-shadow: 0 0 10px 2px #FDE68A; opacity: 0;
+            box-shadow: 0 0 10px 2px #FFFFFF; opacity: 0;
             animation: floatUp 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
 
@@ -84,15 +85,35 @@
             font-family: var(--font-serif);
             font-size: clamp(2.5rem, 8vw, 4rem); font-style: italic;
             color: #FFFFFF; text-align: center;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(245, 158, 11, 0.5);
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(255, 255, 255, 0.8);
             opacity: 0; transform: translateY(20px) scale(0.95);
             animation: textRise 1.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.5s forwards;
         }
 
-        @keyframes beamStrike { 0% { transform: scaleX(0); } 100% { transform: scaleX(1); } }
-        @keyframes burstOpen { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 30% { opacity: 0.8; } 100% { transform: translate(-50%, -50%) scale(2); opacity: 0; } }
-        @keyframes floatUp { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-200px) scale(1.5); opacity: 0; } }
-        @keyframes textRise { 0% { opacity: 0; transform: translateY(20px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+        /* Updated Beam Animation to fade out at the end */
+        @keyframes beamStrike { 
+            0% { transform: scaleX(0); opacity: 1; } 
+            40% { transform: scaleX(1); opacity: 1; } 
+            80% { transform: scaleX(1); opacity: 0; } 
+            100% { transform: scaleX(1); opacity: 0; } 
+        }
+        
+        @keyframes burstOpen { 
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 
+            30% { opacity: 0.8; } 
+            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; } 
+        }
+        
+        @keyframes floatUp { 
+            0% { transform: translateY(0) scale(0.5); opacity: 0; } 
+            20% { opacity: 1; } 
+            100% { transform: translateY(-200px) scale(1.5); opacity: 0; } 
+        }
+        
+        @keyframes textRise { 
+            0% { opacity: 0; transform: translateY(20px) scale(0.95); } 
+            100% { opacity: 1; transform: translateY(0) scale(1); } 
+        }
 
         /* --- TRIPLE-A MAIN APP UI --- */
         .app-wrapper {
